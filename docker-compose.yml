@@ -1,0 +1,76 @@
+
+version: '3.8'
+services:
+  postgres-user:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+
+  postgres-product:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: product
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+
+  postgres-order:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: orderdb
+      POSTGRES_USER: order
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5435:5432"
+
+  postgres-inventory:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: inventorydb
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5436:5432"
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres-user
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres-product
+
+  order-service:
+    build: ./order-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres-order
+
+  inventory-service:
+    build: ./inventory-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgres-inventory
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+      - inventory-service
